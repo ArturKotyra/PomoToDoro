@@ -1,0 +1,31 @@
+@model IEnumerable<PomoToDoro.Models.TaskModel>
+
+@{
+    ViewData["Title"] = "IndexDone";
+}
+
+<h1 class="display-4">Lista ukończonych zadań</h1>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var item in Model) {
+        <tr class="d-flex justify-content-xxl-between">
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.ActionLink("Niegotowe", "UnDone", new { id = item.TaskId }, new { @class = "btn btn-warning" })
+                @Html.ActionLink("Usuń zadanie", "DeleteDone", new { id = item.TaskId }, new { @class = "btn btn-danger" })
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,0 +1,103 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.Data.Sqlite
+@using System.Reflection.Metadata
+<!DOCTYPE html>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1 class="display-4">Timer pomodoro</h1>
+<head>
+    <title>Index</title>
+    @{
+        var taskId = 0;
+        var name = "";
+    } 
+    
+    <select id="choosetask" class="form-select" >
+        <option selected>Nad czym dzisiaj będziesz pracować?</option>
+    
+        @{
+            List<TaskModel> taskList = new();
+
+            using (SqliteConnection con = new SqliteConnection("Data Source=PomoToDoroDB.sqlite"))
+            {
+                using (var tableCmd = con.CreateCommand())
+                {
+                    con.Open();
+                    tableCmd.CommandText = "SELECT * FROM Tasks WHERE IsDone = 0";
+
+                    using (var reader = tableCmd.ExecuteReader())
+                    {
+                        if (reader.HasRows)
+                        {
+                            while (reader.Read())
+                            {
+                                taskList.Add(
+                                    new TaskModel
+                                    {
+                                        TaskId = reader.GetInt32(0),
+                                        Name = reader.GetString(1)
+                                    });
+                            }
+                        }
+                    }
+                }
+            }
+            foreach (var task in taskList)
+            {
+                <option value=@task.TaskId>@task.Name</option>
+            }
+        }
+    </select>
+
+    <script type="text/javascript">
+        var interval = null;
+        var _second = 1000;
+        var _minute = _second * 60;
+        
+        function StartTimer() {
+            if (interval == null) {
+                var end = new Date();
+                end.setMinutes(end.getMinutes()+25);
+                end.setSeconds(end.getSeconds()+1);
+                interval = setInterval(function () {
+                    var now = new Date();
+                    var distance = end - now;
+                    if (distance < 0) {
+                        clearInterval(interval);
+                        document.getElementById('timecountdown').innerHTML = 'Czas minął!';
+                        return;
+                    }
+                    var _minutes = Math.floor(distance / _minute);
+                    var _seconds = Math.floor((distance % _minute) / _second);
+                    document.getElementById('timecountdown').innerHTML = _minutes;
+                    document.getElementById('timecountdown').innerHTML += ' : ' + _seconds;
+                }, 1000);
+            }
+        }
+        
+        function StopTimer() {
+            clearInterval(interval);
+            interval = null;
+            var _minutes = 25;
+            var _seconds = 0;
+            document.getElementById('timecountdown').innerHTML = _minutes;
+            document.getElementById('timecountdown').innerHTML += ' : ' + _seconds;
+        }
+    </script>
+</head>
+<body>
+
+<div class="text-center">
+    <span id="timecountdown" class="display-1">25 : 0</span>
+
+<div class="text-center">
+    <a class="btn btn-success" onclick="StartTimer();">Start</a>
+    <a class="btn btn-danger" onclick="StopTimer();">Stop</a>
+</div>
+
+
+    </div>
+</body>

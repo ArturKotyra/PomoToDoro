@@ -1,0 +1,25 @@
+@model PomoToDoro.Models.TaskModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1 class="display-4">Usuń zadanie</h1>
+
+<h3>Czy na pewno chcesz usunąć to zadanie?</h3>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(task => task.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(task => task.Name)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="submit" value="Usuń" class="btn btn-danger" /> 
+        <a class="btn btn-dark" asp-action="Index">Anuluj</a>
+    </form>
+</div>
